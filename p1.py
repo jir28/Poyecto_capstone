@@ -1,8 +1,28 @@
-
+import influxdb_client
+from influxdb_client.client.write_api import SYNCHRONOUS
 import RPi.GPIO as GPIO #puertos de raspberry
 import time
 #from w1thermsensor import W1ThermSensor #libreria para sensor de temperatura de agua
 from yeelight import Bulb#Libreria para foco MI
+
+
+def send_data_idb(tot_lit):#Función donde tenemos los datos para el envio de informacion a influxdb
+    bucket = "ExP"
+    org = "jirs28"
+    token = "udc2Ei7ZNv81O6T3kXh6V9PgqPlm_nrQv8cot9vtHIHWyQcxrtaU9m5ILDscsXa1faqp9bP5QWrTpYRbOZkzLA=="
+    url = "https://us-east-1-1.aws.cloud2.influxdata.com"
+
+    client = influxdb_client.InfluxDBClient(
+        url=url,
+        token=token,
+        org=org
+    )
+
+    write_api = client.write_api(write_options=SYNCHRONOUS)
+    p = influxdb_client.Point("Litros por baño").tag("Zone", "baño").field("Litros", tot_lit)
+    write_api.write(bucket=bucket, org=org, record=p)
+
+
 
 f = open('flowmeter.txt','a')
 bulb = Bulb("192.168.3.28")
@@ -53,6 +73,9 @@ final=time.time()
 tiempo = round((final-inicio),2)
 print('Litros gastados: ',TotLit)
 print('Tiempo:  ',tiempo,' segundos')
+
+send_data_idb(Tot_lit) # Llamar la función para enviar la cantidad de litros gastados
+#send_data_idb(Temp) #AL tener el sensor se enviara la temperatura promedio o todos los valores(por determinar)
 
 f.write('\nLitros gastados: '+str(TotLit))
 f.write('\nTiempo: '+str(tiempo))
