@@ -3,7 +3,7 @@ Main en python
 
 
 
-Librerias n:
+Librerias :
 
 ·Influx DB Client
 https://github.com/influxdata/influxdb-client-python
