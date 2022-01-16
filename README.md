@@ -1,4 +1,4 @@
-# Pojecto_capstone
+# Poyecto_capstone
 Main en python
 
 
