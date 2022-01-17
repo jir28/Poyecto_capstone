@@ -6,10 +6,10 @@ import time
 from yeelight import Bulb#Libreria para foco MI
 
 
-def send_data_idb(tot_lit):#Función donde tenemos los datos para el envio de informacion a influxdb
-    bucket = "ExP"
+def send_data_idb(totlit):#Función donde tenemos los datos para el envio de informacion a influxdb
+    bucket = "Rasp"
     org = "jirs28"
-    token = "udc2Ei7ZNv81O6T3kXh6V9PgqPlm_nrQv8cot9vtHIHWyQcxrtaU9m5ILDscsXa1faqp9bP5QWrTpYRbOZkzLA=="
+    token = "X3tzSDVgoXJphnnzfqqX0kbS3lkJYgA-ygF0OtBDqZw7jVrP3iDq10HsWHwNHLt3Wmcj3b0Oxb3DE0rg03fr-g=="
     url = "https://us-east-1-1.aws.cloud2.influxdata.com"
 
     client = influxdb_client.InfluxDBClient(
@@ -19,8 +19,9 @@ def send_data_idb(tot_lit):#Función donde tenemos los datos para el envio de in
     )
 
     write_api = client.write_api(write_options=SYNCHRONOUS)
-    p = influxdb_client.Point("Litros por baño").tag("Zone", "baño").field("Litros", tot_lit)
+    p = influxdb_client.Point("Litros por baño").tag("Zone", "baño").field("Litros",totlit)
     write_api.write(bucket=bucket, org=org, record=p)
+    print("Data Sended")
 
 
 
@@ -58,7 +59,7 @@ bulb.set_hsv(360, 0, 1)
 bulb.set_brightness(100)
 bulb.set_color_temp(6500)
 inicio = time.time()
-while(rpt_int < 20):#rpt_int<10 or,,or GPIO.input(inpt)==True <-- esta linea para pruebas antes de todo lo demas
+while(rpt_int < 10):#rpt_int<10 or,,or GPIO.input(inpt)==True <-- esta linea para pruebas antes de todo lo demas
     rpt_int+=1
     TotLit = round(tot_cnt*constant,1)
     if(TotLit>=2 and aux==0):
@@ -74,7 +75,7 @@ tiempo = round((final-inicio),2)
 print('Litros gastados: ',TotLit)
 print('Tiempo:  ',tiempo,' segundos')
 
-send_data_idb(Tot_lit) # Llamar la función para enviar la cantidad de litros gastados
+send_data_idb(TotLit) # Llamar la función para enviar la cantidad de litros gastados
 #send_data_idb(Temp) #AL tener el sensor se enviara la temperatura promedio o todos los valores(por determinar)
 
 f.write('\nLitros gastados: '+str(TotLit))
